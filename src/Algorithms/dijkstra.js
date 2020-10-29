@@ -6,14 +6,6 @@ From the starting node, grab all adjacent nodes and update their distance to "d 
 This returns all nodes in the order in which they were visited. Also has the nodes point back to their previous nodes to allow us to find the shortest path.
 */
 
-/* Comment this for now
-const node = {
-  row,
-  col, 
-  isVisited, 
-  distance,
-}*/
-
 export function dijkstra(grid, startNode, finishNode) {
   const visitedNodesInOrder = [];
   if (!startNode || !finishNode || startNode === finishNode) {
@@ -24,17 +16,15 @@ export function dijkstra(grid, startNode, finishNode) {
   while (!!unvisitedNodes.length) {
     sortNodesByDistance(unvisitedNodes);
     const closestNode = unvisitedNodes.shift();
-    //remove later
-    console.log(closestNode);
-    /*
-    Add walls later
-    Add error handling for no results possible later
-    Add animation later
-    */
-   closestNode.isVisited = true;
-   visitedNodesInOrder.push(closestNode);
-   if (closestNode === finishNode) return 'success'; // change success to "visitedNodesInOrder" so youre able to animate the algos later
-   updateUnvisitedNeighours(closestNode, grid);
+    console.log(closestNode); //remove later
+    //if it finds a wall, continue
+    if (closestNode.isWall) continue;
+    //if the closest node is at a distance of infinity, we stop
+    if (closestNode.distance === Infinity) return visitedNodesInOrder;
+    closestNode.isVisited = true;
+    visitedNodesInOrder.push(closestNode);
+    if (closestNode === finishNode) return visitedNodesInOrder;
+    updateUnvisitedNeighours(closestNode, grid);
   }
 }
 
@@ -68,4 +58,16 @@ function getAllNodes(grid) {
     }
   }
   return nodes;
+}
+
+//Reverses from the finish node to find the shortest path
+//Must be called after the dijkstras algorithm
+export function getNodesInShortestPathOrder(finishNode) {
+  const nodesInShortestPathOrder = [];
+  let currentNode = finishNode;
+  while (currentNode !== null) {
+    nodesInShortestPathOrder.unshift(currentNode);
+    currentNode = currentNode.previousNode;
+  }
+  return nodesInShortestPathOrder;
 }

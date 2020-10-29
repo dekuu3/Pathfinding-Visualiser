@@ -12,3 +12,15 @@
 .node-start {
   background-color: green;
 }
+
+.node-visited {
+  background-color: deepskyblue;
+}
+
+.node-wall {
+  background-color: black;
+}
+
+.node-shortest-path {
+  background-color: rgb(17, 40, 117);
+}
