@@ -86,8 +86,9 @@ export default class PathfindingVisualiser extends Component {
     return (
       <>
         <button onClick={() => this.visualiseDijkstra()}>
-          Visualise Dijkstra's Algorithm
+          Visualise Algorithm
         </button>
+
         <div className="grid">
           {grid.map((row, rowIdx) => {
             return (
@@ -108,9 +109,7 @@ export default class PathfindingVisualiser extends Component {
                       }
                       onMouseUp={() => this.handleMouseUp()}
                       row={row}
-                    >
-                      >
-                    </Node>
+                    ></Node>
                   );
                 })}
               </div>
