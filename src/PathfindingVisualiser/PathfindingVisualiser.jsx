@@ -24,19 +24,110 @@ export default class PathfindingVisualiser extends Component {
     this.setState({ grid });
   }
 
+  //Event handler for the resetGrid button - it clears all nodes and walls
+  resetGrid() {
+    for (let row = 0; row < 20; row++) {
+      for (let col = 0; col < 50; col++) {
+        let currentRowToReset = row;
+        let currentColToReset = col;
+        if (
+          !(
+            document.getElementById(
+              `node-${currentRowToReset}-${currentColToReset}`
+            ).className === "node node-start" ||
+            document.getElementById(
+              `node-${currentRowToReset}-${currentColToReset}`
+            ).className === "node node-finish"
+          )
+        ) {
+          document.getElementById(
+            `node-${currentRowToReset}-${currentColToReset}`
+          ).className = "node";
+        } else {
+        }
+      }
+    }
+    this.componentDidMount();
+  }
+
+  //similar to resetGrid() but this one leaves walls up - preferably to be called before an algorithm runs
+  resetGridExceptWalls() {
+    for (let row = 0; row < 20; row++) {
+      for (let col = 0; col < 50; col++) {
+        let currentRowToReset = row;
+        let currentColToReset = col;
+
+        if (
+          !(
+            document.getElementById(
+              `node-${currentRowToReset}-${currentColToReset}`
+            ).className === "node node-wall" ||
+            document.getElementById(
+              `node-${currentRowToReset}-${currentColToReset}`
+            ).className === "node node-start" ||
+            document.getElementById(
+              `node-${currentRowToReset}-${currentColToReset}`
+            ).className === "node node-finish"
+          )
+        ) {
+          document.getElementById(
+            `node-${currentRowToReset}-${currentColToReset}`
+          ).className = "node";
+        } else {
+        }
+      }
+    }
+  }
+
+  //Mouse event handler for mousedown
   handleMouseDown(row, col) {
     const newGrid = getNewGridWithWallsOn(this.state.grid, row, col);
     this.setState({ grid: newGrid, mouseIsPressed: true });
   }
 
+  //Mouse event handler for when mouse pointer enters a new node whilst being pressed
   handleMouseEnter(row, col) {
     if (!this.state.mouseIsPressed) return;
     const newGrid = getNewGridWithWallsOn(this.state.grid, row, col);
     this.setState({ grid: newGrid });
   }
 
+  //Mouse event handler for when mouse button isnt pressed
   handleMouseUp() {
     this.setState({ mouseIsPressed: false });
+  }
+
+  //Animates the shortest path
+  animateShortestPath(nodesInShortestPathOrder) {
+    for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
+      setTimeout(() => {
+        const node = nodesInShortestPathOrder[i];
+
+        if (
+          !(
+            document.getElementById(`node-${node.row}-${node.col}`)
+              .className === "node node-start" ||
+            document.getElementById(`node-${node.row}-${node.col}`)
+              .className === "node node-finish"
+          )
+        ) {
+          document.getElementById(`node-${node.row}-${node.col}`).className =
+            "node node-shortest-path";
+        }
+      }, 20 * i);
+    }
+  }
+
+  //Event handler for the "visualiseDijkstra" button which runs the Dijkstra algo
+  visualiseDijkstra() {
+    this.resetGridExceptWalls();
+    const { grid } = this.state;
+    const startNode = grid[START_NODE_ROW][START_NODE_COL];
+    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
+    const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
+    console.log(nodesInShortestPathOrder);
+    this.animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
   }
 
   animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder) {
@@ -49,8 +140,18 @@ export default class PathfindingVisualiser extends Component {
       }
       setTimeout(() => {
         const node = visitedNodesInOrder[i];
-        document.getElementById(`node-${node.row}-${node.col}`).className =
-          "node node-visited";
+
+        if (
+          !(
+            document.getElementById(`node-${node.row}-${node.col}`)
+              .className === "node node-start" ||
+            document.getElementById(`node-${node.row}-${node.col}`)
+              .className === "node node-finish"
+          )
+        ) {
+          document.getElementById(`node-${node.row}-${node.col}`).className =
+            "node node-visited";
+        }
         //this was causing this entire react component to re-render every x milliseconds, which was lagging out our pc/animation
         //instead we now update the class of the element to "visited"
         //this.setState({ grid: newGrid });
@@ -58,27 +159,8 @@ export default class PathfindingVisualiser extends Component {
     }
   }
 
-  //Animates the shortest path
-  animateShortestPath(nodesInShortestPathOrder) {
-    for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
-      setTimeout(() => {
-        const node = nodesInShortestPathOrder[i];
-        document.getElementById(`node-${node.row}-${node.col}`).className =
-          "node node-shortest-path";
-      }, 20 * i);
-    }
-  }
-
-  //event handler for the "visualiseDijkstra" Button which runs the Dijkstra algo
-  visualiseDijkstra() {
-    const { grid } = this.state;
-    const startNode = grid[START_NODE_ROW][START_NODE_COL];
-    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-    const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
-    const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
-    console.log(nodesInShortestPathOrder);
-    this.animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
-  }
+  //Event handler for the visualiseAstar" button which runs the A* algo
+  visualiseAstar() {}
 
   render() {
     const { grid, mouseIsPressed } = this.state;
@@ -86,8 +168,14 @@ export default class PathfindingVisualiser extends Component {
     return (
       <>
         <button onClick={() => this.visualiseDijkstra()}>
-          Visualise Algorithm
+          Visualise Dijkstra's Algorithm
         </button>
+
+        <button onClick={() => this.visualiseAstar()}>
+          Visualise A*'s Algorithm
+        </button>
+
+        <button onClick={() => this.resetGrid()}>Clear Grid</button>
 
         <div className="grid">
           {grid.map((row, rowIdx) => {
