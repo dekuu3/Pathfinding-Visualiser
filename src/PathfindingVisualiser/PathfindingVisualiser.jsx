@@ -223,6 +223,7 @@ export default class PathfindingVisualiser extends Component {
                     <Node
                       key={nodeIdx}
                       col={col}
+                      row={row}
                       isFinish={isFinish}
                       isStart={isStart}
                       isWall={isWall}
@@ -232,7 +233,6 @@ export default class PathfindingVisualiser extends Component {
                         this.handleMouseEnter(row, col)
                       }
                       onMouseUp={() => this.handleMouseUp()}
-                      row={row}
                     ></Node>
                   );
                 })}
@@ -267,6 +267,9 @@ const createNode = (col, row) => {
     isVisited: false,
     isWall: false,
     previousNode: null,
+    gValue: Infinity,
+    hValue: Infinity,
+    fValue: Infinity,
   };
 };
 
