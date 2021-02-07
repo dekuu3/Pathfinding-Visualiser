@@ -62,7 +62,7 @@ function getAllNodes(grid) {
 
 //Reverses from the finish node to find the shortest path
 //Must be called after the dijkstras algorithm
-export function getNodesInShortestPathOrder(finishNode) {
+export function getDijkstraNodesInShortestPathOrder(finishNode) {
   const nodesInShortestPathOrder = [];
   let currentNode = finishNode;
   while (currentNode !== null) {

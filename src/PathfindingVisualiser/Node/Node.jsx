@@ -8,13 +8,13 @@ export default class Node extends Component {
   render() {
     const {
       col,
+      row,
       isFinish,
       isStart,
       isWall,
       onMouseDown,
       onMouseEnter,
       onMouseUp,
-      row,
     } = this.props;
     const extraClassName = isFinish
       ? "node-finish"
