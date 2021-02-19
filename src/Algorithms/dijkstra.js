@@ -7,15 +7,15 @@ This returns all nodes in the order in which they were visited. Also has the nod
 */
 
 export function dijkstra(grid, startNode, finishNode) {
-  const visitedNodesInOrder = [];
+  let visitedNodesInOrder = [];
   if (!startNode || !finishNode || startNode === finishNode) {
     return false;
   }
   startNode.distance = 0;
-  const unvisitedNodes = getAllNodes(grid);
+  let unvisitedNodes = getAllNodes(grid);
   while (!!unvisitedNodes.length) {
     sortNodesByDistance(unvisitedNodes);
-    const closestNode = unvisitedNodes.shift();
+    let closestNode = unvisitedNodes.shift();
     //console.log(closestNode);
     //if it finds a wall, continue
     if (closestNode.isWall) continue;
@@ -33,16 +33,16 @@ function sortNodesByDistance(unvisitedNodes) {
 }
 
 function updateUnvisitedNeighours(node, grid) {
-  const unvisitedNeighbours = getUnvisitedNeighbours(node, grid);
-  for (const neighbour of unvisitedNeighbours) {
+  let unvisitedNeighbours = getUnvisitedNeighbours(node, grid);
+  for (let neighbour of unvisitedNeighbours) {
     neighbour.distance = node.distance + 1;
     neighbour.previousNode = node;
   }
 }
 
 function getUnvisitedNeighbours(node, grid) {
-  const neighbours = [];
-  const {col, row} = node;
+  let neighbours = [];
+  let {col, row} = node;
   if (row > 0) neighbours.push(grid[row - 1][col]);
   if (row < grid.length - 1) neighbours.push(grid[row + 1][col]);
   if (col > 0) neighbours.push(grid[row][col - 1]);
@@ -51,9 +51,9 @@ function getUnvisitedNeighbours(node, grid) {
 }
 
 function getAllNodes(grid) {
-  const nodes = [];
-  for (const row of grid) {
-    for (const node of row) {
+  let nodes = [];
+  for (let row of grid) {
+    for (let node of row) {
       nodes.push(node);
     }
   }
@@ -63,7 +63,7 @@ function getAllNodes(grid) {
 //Reverses from the finish node to find the shortest path
 //Must be called after the dijkstras algorithm
 export function getDijkstraNodesInShortestPathOrder(finishNode) {
-  const nodesInShortestPathOrder = [];
+  let nodesInShortestPathOrder = [];
   let currentNode = finishNode;
   while (currentNode !== null) {
     nodesInShortestPathOrder.unshift(currentNode);

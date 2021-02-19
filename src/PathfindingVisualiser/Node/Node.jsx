@@ -6,7 +6,7 @@ export default class Node extends Component {
   //Terniary operator correctly displays finish and start nodes
   //render function displays the nodes
   render() {
-    const {
+    let {
       col,
       row,
       isFinish,

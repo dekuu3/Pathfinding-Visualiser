@@ -7,7 +7,7 @@ F = G + H— cost to reach goal, if the current node is chosen as next node in t
 */
 
 export function astar(grid, startNode, finishNode) {
-  const visitedNodesInOrder = [];
+  let visitedNodesInOrder = [];
   if (!startNode || !finishNode || startNode === finishNode) {
     return false;
   }
@@ -68,8 +68,8 @@ function popFromArray(arr, element) {
 
 //Gets neighbours on each side of a node
 function getUnvisitedNeighbours(node, grid) {
-  const neighbours = [];
-  const {col, row} = node;
+  let neighbours = [];
+  let {col, row} = node;
   if (row > 0) neighbours.push(grid[row - 1][col]);
   if (row < grid.length - 1) neighbours.push(grid[row + 1][col]);
   if (col > 0) neighbours.push(grid[row][col - 1]);
@@ -84,7 +84,7 @@ function calculateHValue(node, finishNode) {
 //Reverses from the finish node to find the shortest path
 //Must be called after the A* algorithm
 export function getAstarNodesInShortestPathOrder(finishNode) {
-  const nodesInShortestPathOrder = [];
+  let nodesInShortestPathOrder = [];
   let currentNode = finishNode;
   while (currentNode !== null) {
     nodesInShortestPathOrder.unshift(currentNode);

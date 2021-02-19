@@ -24,31 +24,27 @@ export default class PathfindingVisualiser extends Component {
 
   //Grid setup using nodes
   componentDidMount() {
-    const grid = getInitialGrid();
+    let grid = getInitialGrid();
     this.setState({ grid });
   }
 
   //Event handler for the resetGrid button - it clears all nodes and walls
   resetGrid() {
-    for (let row = 0; row < 20; row++) {
-      for (let col = 0; col < 50; col++) {
-        let currentRowToReset = row;
-        let currentColToReset = col;
+    let { grid } = this.state;
+    for (let row of grid) {
+      for (let node of row) {
+        let { col, row } = node;
         if (
           !(
-            document.getElementById(
-              `node-${currentRowToReset}-${currentColToReset}`
-            ).className === "node node-start" ||
-            document.getElementById(
-              `node-${currentRowToReset}-${currentColToReset}`
-            ).className === "node node-finish"
+            document.getElementById(`node-${row}-${col}`).className ===
+              "node node-start" ||
+            document.getElementById(`node-${row}-${col}`).className ===
+              "node node-finish"
           )
         ) {
-          document.getElementById(
-            `node-${currentRowToReset}-${currentColToReset}`
-          ).className = "node";
-        } else {
+          document.getElementById(`node-${row}-${col}`).className = "node";
         }
+        node.isVisited = false;
       }
     }
     this.componentDidMount();
@@ -56,29 +52,23 @@ export default class PathfindingVisualiser extends Component {
 
   //similar to resetGrid() but this one leaves walls up - preferably to be called before an algorithm runs
   resetGridExceptWalls() {
-    for (let row = 0; row < 20; row++) {
-      for (let col = 0; col < 50; col++) {
-        let currentRowToReset = row;
-        let currentColToReset = col;
-
+    let { grid } = this.state;
+    for (let row of grid) {
+      for (let node of row) {
+        let { col, row } = node;
         if (
           !(
-            document.getElementById(
-              `node-${currentRowToReset}-${currentColToReset}`
-            ).className === "node node-wall" ||
-            document.getElementById(
-              `node-${currentRowToReset}-${currentColToReset}`
-            ).className === "node node-start" ||
-            document.getElementById(
-              `node-${currentRowToReset}-${currentColToReset}`
-            ).className === "node node-finish"
+            document.getElementById(`node-${row}-${col}`).className ===
+              "node node-wall" ||
+            document.getElementById(`node-${row}-${col}`).className ===
+              "node node-start" ||
+            document.getElementById(`node-${row}-${col}`).className ===
+              "node node-finish"
           )
         ) {
-          document.getElementById(
-            `node-${currentRowToReset}-${currentColToReset}`
-          ).className = "node";
-        } else {
+          document.getElementById(`node-${row}-${col}`).className = "node";
         }
+        node.isVisited = false;
       }
     }
   }
@@ -125,11 +115,18 @@ export default class PathfindingVisualiser extends Component {
   //Event handler for the "visualiseDijkstra" button which runs the Dijkstra algo
   visualiseDijkstra() {
     this.resetGridExceptWalls();
-    const { grid } = this.state;
+    let { grid } = this.state;
     const startNode = grid[START_NODE_ROW][START_NODE_COL];
     const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-    const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
-    const nodesInShortestPathOrder = getDijkstraNodesInShortestPathOrder(
+    let startTime = Date.now();
+    let visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
+    setInterval(function () {
+      let elapsedTime = Date.now() - startTime;
+      document.getElementById("timer").innerHTML = (elapsedTime / 1000).toFixed(
+        3
+      );
+    }, 100);
+    let nodesInShortestPathOrder = getDijkstraNodesInShortestPathOrder(
       finishNode
     );
     console.log(nodesInShortestPathOrder);
@@ -145,7 +142,7 @@ export default class PathfindingVisualiser extends Component {
         return;
       }
       setTimeout(() => {
-        const node = visitedNodesInOrder[i];
+        let node = visitedNodesInOrder[i];
 
         if (
           !(
@@ -168,13 +165,12 @@ export default class PathfindingVisualiser extends Component {
   //Event handler for the visualiseAstar" button which runs the A* algo
   visualiseAstar() {
     this.resetGridExceptWalls();
-    const { grid } = this.state;
-    const startNode = grid[START_NODE_ROW][START_NODE_COL];
-    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-    const visitedNodesInOrder = astar(grid, startNode, finishNode);
-    const nodesInShortestPathOrder = getAstarNodesInShortestPathOrder(
-      finishNode
-    );
+    let { grid } = this.state;
+    let startNode = grid[START_NODE_ROW][START_NODE_COL];
+    let finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    let visitedNodesInOrder = astar(grid, startNode, finishNode);
+    let nodesInShortestPathOrder = getAstarNodesInShortestPathOrder(finishNode);
+    console.log(visitedNodesInOrder);
     console.log(nodesInShortestPathOrder);
     this.animateAstar(visitedNodesInOrder, nodesInShortestPathOrder);
   }
@@ -188,7 +184,7 @@ export default class PathfindingVisualiser extends Component {
         return;
       }
       setTimeout(() => {
-        const node = visitedNodesInOrder[i];
+        let node = visitedNodesInOrder[i];
 
         if (
           !(
@@ -206,7 +202,7 @@ export default class PathfindingVisualiser extends Component {
   }
 
   render() {
-    const { grid, mouseIsPressed } = this.state;
+    let { grid, mouseIsPressed } = this.state;
 
     return (
       <>
@@ -247,15 +243,19 @@ export default class PathfindingVisualiser extends Component {
             );
           })}
         </div>
+        <h3>
+          {" "}
+          Execution time: <span id="timer"></span> s
+        </h3>
       </>
     );
   }
 }
 
-const getInitialGrid = () => {
-  const grid = [];
+let getInitialGrid = () => {
+  let grid = [];
   for (let row = 0; row < 20; row++) {
-    const currentRow = [];
+    let currentRow = [];
     for (let col = 0; col < 50; col++) {
       currentRow.push(createNode(col, row));
     }
@@ -264,7 +264,7 @@ const getInitialGrid = () => {
   return grid;
 };
 
-const createNode = (col, row) => {
+let createNode = (col, row) => {
   return {
     col,
     row,
@@ -280,10 +280,10 @@ const createNode = (col, row) => {
   };
 };
 
-const getNewGridWithWallsOn = (grid, row, col) => {
-  const newGrid = grid.slice();
-  const node = newGrid[row][col];
-  const newNode = {
+let getNewGridWithWallsOn = (grid, row, col) => {
+  let newGrid = grid.slice();
+  let node = newGrid[row][col];
+  let newNode = {
     ...node,
     isWall: !node.isWall,
   };
