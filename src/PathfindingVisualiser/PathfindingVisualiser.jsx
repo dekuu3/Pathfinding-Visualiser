@@ -118,22 +118,20 @@ export default class PathfindingVisualiser extends Component {
     let { grid } = this.state;
     const startNode = grid[START_NODE_ROW][START_NODE_COL];
     const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-    let startTime = Date.now();
+    let startTime = performance.now();
     let visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
-    setInterval(function () {
-      let elapsedTime = Date.now() - startTime;
-      document.getElementById("timer").innerHTML = (elapsedTime / 1000).toFixed(
-        3
-      );
-    }, 100);
+    let elapsedTime = performance.now();
+    document.getElementById("timer").innerHTML = `${(
+      elapsedTime - startTime
+    ).toFixed(3)} ms`;
     let nodesInShortestPathOrder = getDijkstraNodesInShortestPathOrder(
       finishNode
     );
     console.log(nodesInShortestPathOrder);
-    this.animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
+    this.animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder);
   }
 
-  animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder) {
+  animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder) {
     for (let i = 0; i <= visitedNodesInOrder.length; i++) {
       if (i === visitedNodesInOrder.length) {
         setTimeout(() => {
@@ -168,37 +166,15 @@ export default class PathfindingVisualiser extends Component {
     let { grid } = this.state;
     let startNode = grid[START_NODE_ROW][START_NODE_COL];
     let finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    let startTime = performance.now();
     let visitedNodesInOrder = astar(grid, startNode, finishNode);
+    let elapsedTime = performance.now();
+    document.getElementById("timer").innerHTML = `${(
+      elapsedTime - startTime
+    ).toFixed(3)} ms`;
     let nodesInShortestPathOrder = getAstarNodesInShortestPathOrder(finishNode);
-    console.log(visitedNodesInOrder);
     console.log(nodesInShortestPathOrder);
-    this.animateAstar(visitedNodesInOrder, nodesInShortestPathOrder);
-  }
-
-  animateAstar(visitedNodesInOrder, nodesInShortestPathOrder) {
-    for (let i = 0; i <= visitedNodesInOrder.length; i++) {
-      if (i === visitedNodesInOrder.length) {
-        setTimeout(() => {
-          this.animateShortestPath(nodesInShortestPathOrder);
-        }, 10 * i);
-        return;
-      }
-      setTimeout(() => {
-        let node = visitedNodesInOrder[i];
-
-        if (
-          !(
-            document.getElementById(`node-${node.row}-${node.col}`)
-              .className === "node node-start" ||
-            document.getElementById(`node-${node.row}-${node.col}`)
-              .className === "node node-finish"
-          )
-        ) {
-          document.getElementById(`node-${node.row}-${node.col}`).className =
-            "node node-visited";
-        }
-      }, 10 * i);
-    }
+    this.animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder);
   }
 
   render() {
@@ -245,7 +221,7 @@ export default class PathfindingVisualiser extends Component {
         </div>
         <h3>
           {" "}
-          Execution time: <span id="timer"></span> s
+          Execution time: <span id="timer">--</span>
         </h3>
       </>
     );
