@@ -91,24 +91,18 @@ export default class PathfindingVisualiser extends Component {
     this.setState({ mouseIsPressed: false });
   }
 
-  //Animates the shortest path
-  animateShortestPath(nodesInShortestPathOrder) {
-    for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
-      setTimeout(() => {
-        const node = nodesInShortestPathOrder[i];
+  //Fills in the h3 labels with the correct stats
+  setAlgorithmStats(traversedNodes, pathLength) {
+    document.getElementById(
+      "traversedNodes"
+    ).innerHTML = `${traversedNodes.length} nodes`;
 
-        if (
-          !(
-            document.getElementById(`node-${node.row}-${node.col}`)
-              .className === "node node-start" ||
-            document.getElementById(`node-${node.row}-${node.col}`)
-              .className === "node node-finish"
-          )
-        ) {
-          document.getElementById(`node-${node.row}-${node.col}`).className =
-            "node node-shortest-path";
-        }
-      }, 20 * i);
+    if (pathLength.length === 1) {
+      document.getElementById("pathLength").innerHTML = `No path found`;
+    } else {
+      document.getElementById(
+        "pathLength"
+      ).innerHTML = `${pathLength.length} nodes`;
     }
   }
 
@@ -129,6 +123,25 @@ export default class PathfindingVisualiser extends Component {
     );
     console.log(nodesInShortestPathOrder);
     this.animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder);
+    this.setAlgorithmStats(visitedNodesInOrder, nodesInShortestPathOrder);
+  }
+
+  //Event handler for the visualiseAstar" button which runs the A* algo
+  visualiseAstar() {
+    this.resetGridExceptWalls();
+    let { grid } = this.state;
+    let startNode = grid[START_NODE_ROW][START_NODE_COL];
+    let finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    let startTime = performance.now();
+    let visitedNodesInOrder = astar(grid, startNode, finishNode);
+    let elapsedTime = performance.now();
+    document.getElementById("timer").innerHTML = `${(
+      elapsedTime - startTime
+    ).toFixed(3)} ms`;
+    let nodesInShortestPathOrder = getAstarNodesInShortestPathOrder(finishNode);
+    console.log(nodesInShortestPathOrder);
+    this.animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder);
+    this.setAlgorithmStats(visitedNodesInOrder, nodesInShortestPathOrder);
   }
 
   animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder) {
@@ -160,21 +173,25 @@ export default class PathfindingVisualiser extends Component {
     }
   }
 
-  //Event handler for the visualiseAstar" button which runs the A* algo
-  visualiseAstar() {
-    this.resetGridExceptWalls();
-    let { grid } = this.state;
-    let startNode = grid[START_NODE_ROW][START_NODE_COL];
-    let finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-    let startTime = performance.now();
-    let visitedNodesInOrder = astar(grid, startNode, finishNode);
-    let elapsedTime = performance.now();
-    document.getElementById("timer").innerHTML = `${(
-      elapsedTime - startTime
-    ).toFixed(3)} ms`;
-    let nodesInShortestPathOrder = getAstarNodesInShortestPathOrder(finishNode);
-    console.log(nodesInShortestPathOrder);
-    this.animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder);
+  //Animates the shortest path
+  animateShortestPath(nodesInShortestPathOrder) {
+    for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
+      setTimeout(() => {
+        const node = nodesInShortestPathOrder[i];
+
+        if (
+          !(
+            document.getElementById(`node-${node.row}-${node.col}`)
+              .className === "node node-start" ||
+            document.getElementById(`node-${node.row}-${node.col}`)
+              .className === "node node-finish"
+          )
+        ) {
+          document.getElementById(`node-${node.row}-${node.col}`).className =
+            "node node-shortest-path";
+        }
+      }, 20 * i);
+    }
   }
 
   render() {
@@ -220,8 +237,13 @@ export default class PathfindingVisualiser extends Component {
           })}
         </div>
         <h3>
-          {" "}
           Execution time: <span id="timer">--</span>
+        </h3>
+        <h3>
+          Total traversed nodes: <span id="traversedNodes">--</span>
+        </h3>
+        <h3>
+          Path Length: <span id="pathLength">--</span>
         </h3>
       </>
     );
