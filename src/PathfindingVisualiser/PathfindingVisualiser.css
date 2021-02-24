@@ -1,5 +1,5 @@
 .grid {
-  margin: 100px 0 0;
+  margin: 30px 0 0;
 }
 
 button {
@@ -16,4 +16,16 @@ button {
 a,
 button:hover {
   background-color: rgba(102, 192, 186, 0.75);
+}
+
+.algorithmDataTable {
+  padding: ;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+th {
+  padding: 8px 2em 10px 2em;
+  outline: 1px solid gray;
 }

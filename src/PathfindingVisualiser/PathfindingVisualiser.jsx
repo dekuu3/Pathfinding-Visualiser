@@ -5,13 +5,14 @@ import {
 } from "../Algorithms/dijkstra";
 import { astar, getAstarNodesInShortestPathOrder } from "../Algorithms/astar";
 import Node from "./Node/Node";
-
 import "./PathfindingVisualiser.css";
+import Table from "react-bootstrap/Table";
 
 const START_NODE_ROW = 10;
 const START_NODE_COL = 15;
 const FINISH_NODE_ROW = 10;
 const FINISH_NODE_COL = 35;
+let tableData = [];
 
 export default class PathfindingVisualiser extends Component {
   constructor() {
@@ -92,7 +93,7 @@ export default class PathfindingVisualiser extends Component {
   }
 
   //Fills in the h3 labels with the correct stats
-  setAlgorithmStats(traversedNodes, pathLength) {
+  setAlgorithmStats = (traversedNodes, pathLength) => {
     document.getElementById(
       "traversedNodes"
     ).innerHTML = `${traversedNodes.length} nodes`;
@@ -104,7 +105,11 @@ export default class PathfindingVisualiser extends Component {
         "pathLength"
       ).innerHTML = `${pathLength.length} nodes`;
     }
-  }
+  };
+
+  calculateExecutionTime = (startTime, elapsedTime) => {
+    return (elapsedTime - startTime).toFixed(3);
+  };
 
   //Event handler for the "visualiseDijkstra" button which runs the Dijkstra algo
   visualiseDijkstra() {
@@ -115,15 +120,20 @@ export default class PathfindingVisualiser extends Component {
     let startTime = performance.now();
     let visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
     let elapsedTime = performance.now();
-    document.getElementById("timer").innerHTML = `${(
-      elapsedTime - startTime
-    ).toFixed(3)} ms`;
+    let executionTime = this.calculateExecutionTime(startTime, elapsedTime);
+    document.getElementById("timer").innerHTML = `${executionTime} ms`;
     let nodesInShortestPathOrder = getDijkstraNodesInShortestPathOrder(
       finishNode
     );
     console.log(nodesInShortestPathOrder);
     this.animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder);
     this.setAlgorithmStats(visitedNodesInOrder, nodesInShortestPathOrder);
+    this.setTableData(
+      "Dijkstra",
+      executionTime,
+      visitedNodesInOrder,
+      nodesInShortestPathOrder
+    );
   }
 
   //Event handler for the visualiseAstar" button which runs the A* algo
@@ -135,13 +145,18 @@ export default class PathfindingVisualiser extends Component {
     let startTime = performance.now();
     let visitedNodesInOrder = astar(grid, startNode, finishNode);
     let elapsedTime = performance.now();
-    document.getElementById("timer").innerHTML = `${(
-      elapsedTime - startTime
-    ).toFixed(3)} ms`;
+    let executionTime = this.calculateExecutionTime(startTime, elapsedTime);
+    document.getElementById("timer").innerHTML = `${executionTime} ms`;
     let nodesInShortestPathOrder = getAstarNodesInShortestPathOrder(finishNode);
     console.log(nodesInShortestPathOrder);
     this.animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder);
     this.setAlgorithmStats(visitedNodesInOrder, nodesInShortestPathOrder);
+    this.setTableData(
+      "A*",
+      executionTime,
+      visitedNodesInOrder,
+      nodesInShortestPathOrder
+    );
   }
 
   animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder) {
@@ -194,6 +209,36 @@ export default class PathfindingVisualiser extends Component {
     }
   }
 
+  setTableData = (algorithmName, executionTime, traversedNodes, pathLength) => {
+    let tempPathLength;
+    if (pathLength.length === 1) {
+      tempPathLength = "No Path Found";
+    } else {
+      tempPathLength = pathLength.length.toString();
+    }
+
+    tableData.push({
+      algorithm: algorithmName,
+      executionTime: `${executionTime} ms`,
+      totalNodes: traversedNodes.length.toString(),
+      pathLength: tempPathLength,
+    });
+
+    this.setState({ state: this.state });
+    console.log(tableData);
+  };
+
+  renderTableData = (tableData, index) => {
+    return (
+      <tr key={index}>
+        <td>{tableData.algorithm}</td>
+        <td>{tableData.executionTime}</td>
+        <td>{tableData.totalNodes}</td>
+        <td>{tableData.pathLength}</td>
+      </tr>
+    );
+  };
+
   render() {
     let { grid, mouseIsPressed } = this.state;
 
@@ -236,15 +281,28 @@ export default class PathfindingVisualiser extends Component {
             );
           })}
         </div>
-        <h3>
+        <h4>
           Execution time: <span id="timer">--</span>
-        </h3>
-        <h3>
+        </h4>
+        <h4>
           Total traversed nodes: <span id="traversedNodes">--</span>
-        </h3>
-        <h3>
+        </h4>
+        <h4>
           Path Length: <span id="pathLength">--</span>
-        </h3>
+        </h4>
+        <div className="algorithmDataTable">
+          <Table>
+            <thead>
+              <tr>
+                <th> Algorithm </th>
+                <th> Execution Time </th>
+                <th> Nodes Traversed </th>
+                <th> Path Length </th>
+              </tr>
+            </thead>
+            <tbody>{tableData.map(this.renderTableData)}</tbody>
+          </Table>
+        </div>
       </>
     );
   }

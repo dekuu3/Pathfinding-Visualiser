@@ -1,6 +1,6 @@
 A Pathfinding Algorithm Visualiser using ReactJS
 
-![image](https://user-images.githubusercontent.com/42548632/106946006-71281a00-6720-11eb-836f-85cdd6d32d80.png)
+<a href="https://imgur.com/ef91Dad"><img src="https://i.imgur.com/ef91Dad.gif" title="algorithm demo"></a>
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
