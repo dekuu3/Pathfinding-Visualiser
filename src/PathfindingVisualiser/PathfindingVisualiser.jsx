@@ -125,7 +125,7 @@ export default class PathfindingVisualiser extends Component {
     let nodesInShortestPathOrder = getDijkstraNodesInShortestPathOrder(
       finishNode
     );
-    console.log(nodesInShortestPathOrder);
+    console.log(visitedNodesInOrder);
     this.animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder);
     this.setAlgorithmStats(visitedNodesInOrder, nodesInShortestPathOrder);
     this.setTableData(

@@ -19,7 +19,7 @@ button:hover {
 }
 
 .algorithmDataTable {
-  padding: ;
+  padding: 1em 1em 5em 1em;
   display: flex;
   align-items: center;
   justify-content: center;

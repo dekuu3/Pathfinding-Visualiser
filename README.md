@@ -1,5 +1,7 @@
 A Pathfinding Algorithm Visualiser using ReactJS
 
+Hosted on https://dekuu3.github.io/Pathfinding-Visualiser/
+
 <a href="https://imgur.com/ef91Dad"><img src="https://i.imgur.com/ef91Dad.gif" title="algorithm demo"></a>
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
