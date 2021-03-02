@@ -29,3 +29,13 @@ th {
   padding: 8px 2em 10px 2em;
   outline: 1px solid gray;
 }
+
+textarea {
+  padding-bottom: 5rem;
+  resize: none;
+  border-radius: 0.35rem;
+}
+
+.gridIDTextArea {
+  padding-bottom: 100px;
+}

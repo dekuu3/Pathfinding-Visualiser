@@ -32,6 +32,7 @@ export default class PathfindingVisualiser extends Component {
   //Event handler for the resetGrid button - it clears all nodes and walls
   resetGrid() {
     let { grid } = this.state;
+
     for (let row of grid) {
       for (let node of row) {
         let { col, row } = node;
@@ -48,6 +49,7 @@ export default class PathfindingVisualiser extends Component {
         node.isVisited = false;
       }
     }
+    document.getElementById("gridIDTextArea").innerHTML = null;
     this.componentDidMount();
   }
 
@@ -209,6 +211,57 @@ export default class PathfindingVisualiser extends Component {
     }
   }
 
+  randomizeWalls() {
+    this.resetGrid();
+    
+    let { grid } = this.state;
+    
+    for (let row of grid) {
+      for (let node of row) {
+        let { col, row } = node;
+        if (
+          document.getElementById(`node-${row}-${col}`).className ===
+            "node node-start" ||
+          document.getElementById(`node-${row}-${col}`).className ===
+            "node node-finish"
+        ) continue;
+
+        if (Math.floor(Math.random() * 3) === 1) {
+          let newGrid = getNewGridWithWallsOn(this.state.grid, row, col);
+          this.setState({ grid: newGrid });
+        }
+      }
+    }
+  };
+
+  setGridIDTextArea() {
+    let { grid } = this.state;
+    let text = "";
+
+    for (let row of grid) {
+      for (let node of row) {
+        let { col, row } = node;
+        if(document.getElementById(`node-${row}-${col}`).className ===
+        "node node-start"){
+          text += "2";
+        }
+        if(document.getElementById(`node-${row}-${col}`).className ===
+        "node node-finish"){
+          text += "3"; 
+        }
+        if(document.getElementById(`node-${row}-${col}`).className ===
+        "node node-wall"){
+          text += "1"
+        }
+        else {
+          text += "0";
+        }
+      }
+    } 
+    document.getElementById("gridIDTextArea").innerHTML = text;
+    this.setState({state: this.state});
+  }
+
   setTableData = (algorithmName, executionTime, traversedNodes, pathLength) => {
     let tempPathLength;
     if (pathLength.length === 1) {
@@ -253,6 +306,8 @@ export default class PathfindingVisualiser extends Component {
         </button>
 
         <button onClick={() => this.resetGrid()}>Clear Grid</button>
+
+        <button onClick={() => this.randomizeWalls()}>Randomize Walls</button>
 
         <div className="grid">
           {grid.map((row, rowIdx) => {
@@ -302,6 +357,10 @@ export default class PathfindingVisualiser extends Component {
             </thead>
             <tbody>{tableData.map(this.renderTableData)}</tbody>
           </Table>
+        </div>
+        <div class="gridIDTextArea">
+        <button onClick={() => this.setGridIDTextArea()}>Update Grid ID</button><br></br>
+        <textarea id="gridIDTextArea" type="text" placeholder="Grid ID" cols="100"></textarea>
         </div>
       </>
     );
