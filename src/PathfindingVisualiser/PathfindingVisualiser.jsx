@@ -4,6 +4,7 @@ import {
   getDijkstraNodesInShortestPathOrder,
 } from "../Algorithms/dijkstra";
 import { astar, getAstarNodesInShortestPathOrder } from "../Algorithms/astar";
+import { depthfirst, getDepthFirstNodesInShortestPathOrder } from "../Algorithms/depthfirst";
 import Node from "./Node/Node";
 import "./PathfindingVisualiser.css";
 import Table from "react-bootstrap/Table";
@@ -161,6 +162,29 @@ export default class PathfindingVisualiser extends Component {
     );
   }
 
+  //Event handler for the visualiseAstar" button which runs the A* algo
+  visualiseDepthFirst() {
+    this.resetGridExceptWalls();
+    let { grid } = this.state;
+    let startNode = grid[START_NODE_ROW][START_NODE_COL];
+    let finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    let startTime = performance.now();
+    let visitedNodesInOrder = depthfirst(grid, startNode, finishNode);
+    let elapsedTime = performance.now();
+    let executionTime = this.calculateExecutionTime(startTime, elapsedTime);
+    document.getElementById("timer").innerHTML = `${executionTime} ms`;
+    let nodesInShortestPathOrder = getDepthFirstNodesInShortestPathOrder(finishNode);
+    console.log(nodesInShortestPathOrder);
+    this.animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder);
+    this.setAlgorithmStats(visitedNodesInOrder, nodesInShortestPathOrder);
+    this.setTableData(
+      "Depth-First",
+      executionTime,
+      visitedNodesInOrder,
+      nodesInShortestPathOrder
+    );
+  }
+
   animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder) {
     for (let i = 0; i <= visitedNodesInOrder.length; i++) {
       if (i === visitedNodesInOrder.length) {
@@ -297,17 +321,18 @@ export default class PathfindingVisualiser extends Component {
 
     return (
       <>
-        <button onClick={() => this.visualiseDijkstra()}>
-          Visualise Dijkstra's Algorithm
-        </button>
+        <div class="dropdown">
+          <button class="dropbtn">Select Your Algorithm ▼</button>
+          <div id="myDropdown" class="dropdown-content">
+            <button onClick={() => this.visualiseDijkstra()}>Dijkstra Algorithm</button>
+            <button onClick={() => this.visualiseAstar()}>A* Algorithm</button>
+            <button onClick={() => this.visualiseDepthFirst()}>Depth-First Search</button>
+          </div>
+        </div>
 
-        <button onClick={() => this.visualiseAstar()}>
-          Visualise A*'s Algorithm
-        </button>
+        <button class="btn" onClick={() => this.resetGrid()}>Clear Grid</button>
 
-        <button onClick={() => this.resetGrid()}>Clear Grid</button>
-
-        <button onClick={() => this.randomizeWalls()}>Randomize Walls</button>
+        <button class="btn" onClick={() => this.randomizeWalls()}>Randomize Walls</button>
 
         <div className="grid">
           {grid.map((row, rowIdx) => {
@@ -337,13 +362,13 @@ export default class PathfindingVisualiser extends Component {
           })}
         </div>
         <h4>
-          Execution time: <span id="timer">--</span>
+          Execution time: <span id="timer">- -</span>
         </h4>
         <h4>
-          Total traversed nodes: <span id="traversedNodes">--</span>
+          Total traversed nodes: <span id="traversedNodes">- -</span>
         </h4>
         <h4>
-          Path Length: <span id="pathLength">--</span>
+          Path Length: <span id="pathLength">- -</span>
         </h4>
         <div className="algorithmDataTable">
           <Table>
@@ -359,8 +384,8 @@ export default class PathfindingVisualiser extends Component {
           </Table>
         </div>
         <div class="gridIDTextArea">
-        <button onClick={() => this.setGridIDTextArea()}>Update Grid ID</button><br></br>
-        <textarea id="gridIDTextArea" type="text" placeholder="Grid ID" cols="100"></textarea>
+        <button onClick={() => this.setGridIDTextArea()} class="btn">Update Grid ID</button><br></br>
+        <textarea id="gridIDTextArea" type="text" placeholder="Grid ID"  readonly="true" cols="100"></textarea>
         </div>
       </>
     );
