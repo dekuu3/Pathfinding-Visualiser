@@ -334,6 +334,8 @@ export default class PathfindingVisualiser extends Component {
 
         <button class="btn" onClick={() => this.randomizeWalls()}>Randomize Walls</button>
 
+        <a href="https://github.com/dekuu3/Pathfinding-Visualiser" target="_blank" rel="noopener noreferrer">Source Code <code>&lt;/&gt;</code></a>
+
         <div className="grid">
           {grid.map((row, rowIdx) => {
             return (
@@ -385,6 +387,9 @@ export default class PathfindingVisualiser extends Component {
         </div>
         <div class="gridIDTextArea">
         <button onClick={() => this.setGridIDTextArea()} class="btn">Update Grid ID</button><br></br>
+        <p>This area allows you to see the current grid state above. Keep in mind this is a 50x20 grid.</p>
+        <p>This is useful for those who wish to reproduce these results for themselves.</p>
+        <p>0 = traversable node | 1 = wall | 2 = start node | 3 = finish node</p>
         <textarea id="gridIDTextArea" type="text" placeholder="Grid ID"  readonly="true" cols="100"></textarea>
         </div>
       </>
