@@ -14,7 +14,6 @@ export function depthfirst(grid, startNode, finishNode) {
   
   while (stack.length > 0){
     let currentNode = stack.pop();
-    console.log(`${currentNode} just came out of the stack`);
 
     currentNode.isVisited = true;
     if (currentNode === finishNode) return visitedNodesInOrder;
