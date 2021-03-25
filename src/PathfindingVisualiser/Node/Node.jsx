@@ -7,8 +7,8 @@ export default class Node extends Component {
   //render function displays the nodes
   render() {
     let {
-      col,
       row,
+      col,
       isFinish,
       isStart,
       isWall,

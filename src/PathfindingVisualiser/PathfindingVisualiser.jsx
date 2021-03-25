@@ -6,14 +6,15 @@ import {
 import { astar, getAstarNodesInShortestPathOrder } from "../Algorithms/astar";
 import { depthfirst, getDepthFirstNodesInShortestPathOrder } from "../Algorithms/depthfirst";
 import { breadthfirst, getBreadthFirstNodesInShortestPathOrder } from "../Algorithms/breadthfirst";
+import { greedybestfirst, getGreedyBestFirstNodesInShortestPathOrder } from "../Algorithms/greedybestfirst";
 import Node from "./Node/Node";
 import "./PathfindingVisualiser.css";
 import Table from "react-bootstrap/Table";
 
 const START_NODE_ROW = 10;
-const START_NODE_COL = 15;
+const START_NODE_COL = 10;
 const FINISH_NODE_ROW = 10;
-const FINISH_NODE_COL = 35;
+const FINISH_NODE_COL = 40;
 let tableData = [];
 
 export default class PathfindingVisualiser extends Component {
@@ -209,6 +210,29 @@ export default class PathfindingVisualiser extends Component {
     );
   }
 
+   //Event handler for the "visualiseGreedyBestFirst" button which runs the breadth-first search algorithm
+   visualiseGreedyBestFirst() {
+    this.resetGridExceptWalls();
+    let { grid } = this.state;
+    let startNode = grid[START_NODE_ROW][START_NODE_COL];
+    let finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    let startTime = performance.now();
+    let visitedNodesInOrder = greedybestfirst(grid, startNode, finishNode);
+    let elapsedTime = performance.now();
+    let executionTime = this.calculateExecutionTime(startTime, elapsedTime);
+    document.getElementById("timer").innerHTML = `${executionTime} ms`;
+    let nodesInShortestPathOrder = getGreedyBestFirstNodesInShortestPathOrder(finishNode);
+    console.log(nodesInShortestPathOrder);
+    this.animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder);
+    this.setAlgorithmStats(visitedNodesInOrder, nodesInShortestPathOrder);
+    this.setTableData(
+      "Greedy Best-First",
+      executionTime,
+      visitedNodesInOrder,
+      nodesInShortestPathOrder
+    );
+  }
+
   animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder) {
     for (let i = 0; i <= visitedNodesInOrder.length; i++) {
       if (i === visitedNodesInOrder.length) {
@@ -326,7 +350,6 @@ export default class PathfindingVisualiser extends Component {
     });
 
     this.setState({ state: this.state });
-    console.log(tableData);
   };
 
   renderTableData = (tableData, index) => {
@@ -352,6 +375,7 @@ export default class PathfindingVisualiser extends Component {
             <button onClick={() => this.visualiseAstar()}>A* Algorithm</button>
             <button onClick={() => this.visualiseDepthFirst()}>Depth-First Search</button>
             <button onClick={() => this.visualiseBreadthFirst()}>Breadth-First Search</button>
+            <button onClick={() => this.visualiseGreedyBestFirst()}>Greedy Best First Search</button>
           </div>
         </div>
 
@@ -436,8 +460,8 @@ let getInitialGrid = () => {
 
 let createNode = (col, row) => {
   return {
-    col,
     row,
+    col,
     isStart: row === START_NODE_ROW && col === START_NODE_COL,
     isFinish: row === FINISH_NODE_ROW && col === FINISH_NODE_COL,
     distance: Infinity,

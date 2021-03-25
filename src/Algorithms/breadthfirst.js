@@ -15,17 +15,16 @@ export function breadthfirst(grid, startNode, finishNode) {
     let currentNode = queue.shift();
 
     if (currentNode === finishNode) return visitedNodesInOrder;
-
+    
+    currentNode.isVisited = true;
     visitedNodesInOrder.push(currentNode);
 
     let unvisitedNeighbours = getUnvisitedNeighbours(currentNode, grid);
 
     for (let neighbour of unvisitedNeighbours) {
       if (neighbour.isWall) continue;
-      if (neighbour.isVisited) continue;
-      currentNode.isVisited = true;
+      if (queue.includes(neighbour)) continue;
       neighbour.previousNode = currentNode;
-      neighbour.isVisited = true;
       queue.push(neighbour);
     }
   }
