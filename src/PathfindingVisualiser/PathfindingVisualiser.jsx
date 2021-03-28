@@ -303,7 +303,7 @@ export default class PathfindingVisualiser extends Component {
             "node node-finish"
         ) continue;
 
-        if (Math.floor(Math.random() * 6) === 1) {
+        if (Math.floor(Math.random() * 3) === 1) {
           let newGrid = getNewGridWithWallsOn(this.state.grid, row, col);
           this.setState({ grid: newGrid });
         }
