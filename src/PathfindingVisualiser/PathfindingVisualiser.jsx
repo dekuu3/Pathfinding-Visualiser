@@ -116,126 +116,77 @@ export default class PathfindingVisualiser extends Component {
     return (elapsedTime - startTime).toFixed(3);
   };
 
-  //Event handler for the "visualiseDijkstra" button which runs the Dijkstra algo
-  visualiseDijkstra() {
-    this.resetGridExceptWalls();
+  //Event handler for the visualiseAlgorithm button
+  visualiseAlgorithm(algo) {
+    this.resetGrid();
     let { grid } = this.state;
     const startNode = grid[START_NODE_ROW][START_NODE_COL];
     const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-    let startTime = performance.now();
-    let visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
-    let elapsedTime = performance.now();
-    let executionTime = this.calculateExecutionTime(startTime, elapsedTime);
-    document.getElementById("timer").innerHTML = `${executionTime} ms`;
-    let nodesInShortestPathOrder = getDijkstraNodesInShortestPathOrder(
-      finishNode
-    );
+    let startTime;
+    let visitedNodesInOrder;
+    let elapsedTime;
+    let executionTime;
+    let nodesInShortestPathOrder;
+
+    if (algo === "Dijkstra") {
+      startTime = performance.now();
+      visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
+      elapsedTime = performance.now();
+      executionTime = this.calculateExecutionTime(startTime, elapsedTime);
+      document.getElementById("timer").innerHTML = `${executionTime} ms`;
+      nodesInShortestPathOrder = getDijkstraNodesInShortestPathOrder(finishNode);
+      document.getElementById("helpfulHints").innerHTML = `Dijkstra's Algorithm is <b><u>weighted</b></u> and guarantees the shortest path!`;
+    }
+
+    if (algo === "A*") {
+      startTime = performance.now();
+      visitedNodesInOrder = astar(grid, startNode, finishNode);
+      elapsedTime = performance.now();
+      executionTime = this.calculateExecutionTime(startTime, elapsedTime);
+      document.getElementById("timer").innerHTML = `${executionTime} ms`;
+      nodesInShortestPathOrder = getAstarNodesInShortestPathOrder(finishNode);
+      document.getElementById("helpfulHints").innerHTML = `A*'s Algorithm is <b><u>weighted</b></u> and guarantees the shortest path!`;
+    }
+
+    if (algo === "Depth-First") {
+      startTime = performance.now();
+      visitedNodesInOrder = depthfirst(grid, startNode, finishNode);
+      elapsedTime = performance.now();
+      executionTime = this.calculateExecutionTime(startTime, elapsedTime);
+      document.getElementById("timer").innerHTML = `${executionTime} ms`;
+      nodesInShortestPathOrder = getDepthFirstNodesInShortestPathOrder(finishNode);
+      document.getElementById("helpfulHints").innerHTML =  `Depth-First Search is <b><u>unweighted</b></u> and does not guarantees the shortest path!`;
+    }
+
+    if (algo === "Breadth-First") {
+      startTime = performance.now();
+      visitedNodesInOrder = breadthfirst(grid, startNode, finishNode);
+      elapsedTime = performance.now();
+      executionTime = this.calculateExecutionTime(startTime, elapsedTime);
+      document.getElementById("timer").innerHTML = `${executionTime} ms`;
+      nodesInShortestPathOrder = getBreadthFirstNodesInShortestPathOrder(finishNode);
+      document.getElementById("helpfulHints").innerHTML = `Breadth-First Search is <b><u>unweighted</b></u> and guarantees the shortest path!`;
+    }
+
+    if (algo === "Greedy") {
+      startTime = performance.now();
+      visitedNodesInOrder = greedybestfirst(grid, startNode, finishNode);
+      elapsedTime = performance.now();
+      executionTime = this.calculateExecutionTime(startTime, elapsedTime);
+      document.getElementById("timer").innerHTML = `${executionTime} ms`;
+      nodesInShortestPathOrder = getGreedyBestFirstNodesInShortestPathOrder(finishNode);
+      document.getElementById("helpfulHints").innerHTML = `Greedy Best-First Search is <b><u>weighted</b></u> and does not guarantees the shortest path!`;
+    }
+
     console.log(visitedNodesInOrder);
     this.animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder);
     this.setAlgorithmStats(visitedNodesInOrder, nodesInShortestPathOrder);
     this.setTableData(
-      "Dijkstra",
+      algo,
       executionTime,
       visitedNodesInOrder,
       nodesInShortestPathOrder
     );
-    document.getElementById("helpfulHints").innerHTML = `Dijkstra's Algorithm is <b><u>weighted</b></u> and guarantees the shortest path!`;
-  }
-
-  //Event handler for the "visualiseAstar" button which runs the A* algo
-  visualiseAstar() {
-    this.resetGridExceptWalls();
-    let { grid } = this.state;
-    let startNode = grid[START_NODE_ROW][START_NODE_COL];
-    let finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-    let startTime = performance.now();
-    let visitedNodesInOrder = astar(grid, startNode, finishNode);
-    let elapsedTime = performance.now();
-    let executionTime = this.calculateExecutionTime(startTime, elapsedTime);
-    document.getElementById("timer").innerHTML = `${executionTime} ms`;
-    let nodesInShortestPathOrder = getAstarNodesInShortestPathOrder(finishNode);
-    console.log(nodesInShortestPathOrder);
-    this.animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder);
-    this.setAlgorithmStats(visitedNodesInOrder, nodesInShortestPathOrder);
-    this.setTableData(
-      "A*",
-      executionTime,
-      visitedNodesInOrder,
-      nodesInShortestPathOrder
-    );
-    document.getElementById("helpfulHints").innerHTML = `A*'s Algorithm is <b><u>weighted</b></u> and guarantees the shortest path!`;
-  }
-
-  //Event handler for the "visualiseDepthFirst" button which runs the depth-first search algorithm 
-  visualiseDepthFirst() {
-    this.resetGridExceptWalls();
-    let { grid } = this.state;
-    let startNode = grid[START_NODE_ROW][START_NODE_COL];
-    let finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-    let startTime = performance.now();
-    let visitedNodesInOrder = depthfirst(grid, startNode, finishNode);
-    let elapsedTime = performance.now();
-    let executionTime = this.calculateExecutionTime(startTime, elapsedTime);
-    document.getElementById("timer").innerHTML = `${executionTime} ms`;
-    let nodesInShortestPathOrder = getDepthFirstNodesInShortestPathOrder(finishNode);
-    console.log(nodesInShortestPathOrder);
-    this.animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder);
-    this.setAlgorithmStats(visitedNodesInOrder, nodesInShortestPathOrder);
-    this.setTableData(
-      "Depth-First",
-      executionTime,
-      visitedNodesInOrder,
-      nodesInShortestPathOrder
-    );
-    document.getElementById("helpfulHints").innerHTML = `Depth-First Search is <b><u>unweighted</b></u> and does not guarantees the shortest path!`;
-  }
-
-   //Event handler for the "visualiseBreadthFirst" button which runs the breadth-first search algorithm
-   visualiseBreadthFirst() {
-    this.resetGridExceptWalls();
-    let { grid } = this.state;
-    let startNode = grid[START_NODE_ROW][START_NODE_COL];
-    let finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-    let startTime = performance.now();
-    let visitedNodesInOrder = breadthfirst(grid, startNode, finishNode);
-    let elapsedTime = performance.now();
-    let executionTime = this.calculateExecutionTime(startTime, elapsedTime);
-    document.getElementById("timer").innerHTML = `${executionTime} ms`;
-    let nodesInShortestPathOrder = getBreadthFirstNodesInShortestPathOrder(finishNode);
-    console.log(nodesInShortestPathOrder);
-    this.animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder);
-    this.setAlgorithmStats(visitedNodesInOrder, nodesInShortestPathOrder);
-    this.setTableData(
-      "Breadth-First",
-      executionTime,
-      visitedNodesInOrder,
-      nodesInShortestPathOrder
-    );
-    document.getElementById("helpfulHints").innerHTML = `Breadth-First Search is <b><u>unweighted</b></u> and guarantees the shortest path!`;
-  }
-
-   //Event handler for the "visualiseGreedyBestFirst" button which runs the breadth-first search algorithm
-   visualiseGreedyBestFirst() {
-    this.resetGridExceptWalls();
-    let { grid } = this.state;
-    let startNode = grid[START_NODE_ROW][START_NODE_COL];
-    let finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
-    let startTime = performance.now();
-    let visitedNodesInOrder = greedybestfirst(grid, startNode, finishNode);
-    let elapsedTime = performance.now();
-    let executionTime = this.calculateExecutionTime(startTime, elapsedTime);
-    document.getElementById("timer").innerHTML = `${executionTime} ms`;
-    let nodesInShortestPathOrder = getGreedyBestFirstNodesInShortestPathOrder(finishNode);
-    console.log(nodesInShortestPathOrder);
-    this.animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder);
-    this.setAlgorithmStats(visitedNodesInOrder, nodesInShortestPathOrder);
-    this.setTableData(
-      "Greedy Best-First",
-      executionTime,
-      visitedNodesInOrder,
-      nodesInShortestPathOrder
-    );
-    document.getElementById("helpfulHints").innerHTML = `Greedy Best-First Search is <b><u>weighted</b></u> and does not guarantees the shortest path!`;
   }
 
   animateAlgorithm(visitedNodesInOrder, nodesInShortestPathOrder) {
@@ -464,11 +415,11 @@ export default class PathfindingVisualiser extends Component {
         <div class="dropdown">
           <button class="dropbtn">Select Your Algorithm ▼</button>
           <div id="myDropdown" class="dropdown-content">
-            <button onClick={() => this.visualiseDijkstra()}>Dijkstra Algorithm</button>
-            <button onClick={() => this.visualiseAstar()}>A* Algorithm</button>
-            <button onClick={() => this.visualiseDepthFirst()}>Depth-First Search</button>
-            <button onClick={() => this.visualiseBreadthFirst()}>Breadth-First Search</button>
-            <button onClick={() => this.visualiseGreedyBestFirst()}>Greedy Best First Search</button>
+            <button onClick={() => this.visualiseAlgorithm("Dijkstra")}>Dijkstra Algorithm</button>
+            <button onClick={() => this.visualiseAlgorithm("A*")}>A* Algorithm</button>
+            <button onClick={() => this.visualiseAlgorithm("Depth-First")}>Depth-First Search</button>
+            <button onClick={() => this.visualiseAlgorithm("BreadthFirst")}>Breadth-First Search</button>
+            <button onClick={() => this.visualiseAlgorithm("Greedy")}>Greedy Best First Search</button>
           </div>
         </div>
 
