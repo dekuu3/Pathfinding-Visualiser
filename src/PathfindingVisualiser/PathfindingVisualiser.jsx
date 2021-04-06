@@ -118,7 +118,7 @@ export default class PathfindingVisualiser extends Component {
 
   //Event handler for the visualiseAlgorithm button
   visualiseAlgorithm(algo) {
-    this.resetGrid();
+    this.resetGridExceptWalls();
     let { grid } = this.state;
     const startNode = grid[START_NODE_ROW][START_NODE_COL];
     const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
@@ -254,7 +254,7 @@ export default class PathfindingVisualiser extends Component {
             "node node-finish"
         ) continue;
 
-        if (Math.floor(Math.random() * 6) === 1) {
+        if (Math.floor(Math.random() * 3) === 1) {
           let newGrid = getNewGridWithWallsOn(this.state.grid, row, col);
           this.setState({ grid: newGrid });
         }
@@ -418,7 +418,7 @@ export default class PathfindingVisualiser extends Component {
             <button onClick={() => this.visualiseAlgorithm("Dijkstra")}>Dijkstra Algorithm</button>
             <button onClick={() => this.visualiseAlgorithm("A*")}>A* Algorithm</button>
             <button onClick={() => this.visualiseAlgorithm("Depth-First")}>Depth-First Search</button>
-            <button onClick={() => this.visualiseAlgorithm("BreadthFirst")}>Breadth-First Search</button>
+            <button onClick={() => this.visualiseAlgorithm("Breadth-First")}>Breadth-First Search</button>
             <button onClick={() => this.visualiseAlgorithm("Greedy")}>Greedy Best First Search</button>
           </div>
         </div>
